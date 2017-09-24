@@ -11,14 +11,55 @@ struct Name
 private:
 	string firstName;		//First name
 	string	lastName;		//Last name
+
+public:
+	Name()
+	{
+		firstName = "";
+		lastName = "";
+	}
+
+	void setName(string first, string last)
+	{
+		firstName = first;
+		lastName = last;
+	}
+
+	string getName()
+	{
+		return firstName + " " + lastName;
+	}
 };
 
-
-class BankAccount
+struct Depositor
 {
 private:
 	Name name;
 	string ssn;
+
+public:
+	Depositor()
+	{
+		Name();
+		//name.getName();
+		ssn = "0-0-0 - 0-0 - 0-0-0-0";
+	}
+
+	void setSSN(string social)
+	{
+		ssn = social;
+	}
+
+	string getSSN()
+	{
+		return ssn;
+	}
+};
+
+class BankAccount
+{
+private:
+	Depositor depositor;
 	string acct_type;
 	int acct_num;
 	int num_transactions;
@@ -27,14 +68,35 @@ private:
 public:
 	BankAccount(double bal = 0.0)
 	{
+		Depositor();
+		//depositor.getSSN;
+		acct_type = "";
 		balance = bal;
 		num_transactions = 0;
 	}
+
+	void setAcct_type(int type)
+	{
+		if (type == 1)
+		{
+			acct_type = "Checking";
+		}
+		if (type == 2)
+		{
+			acct_type = "Savings";
+		}
+		else
+		{
+			acct_type = "CD";
+		}
+	}
+
 	void makeDeposit(double amount)
 	{
 		balance += amount;
 		num_transactions++;
 	}
+
 	bool BankAccount::withdraw(double amount)
 	{
 		if (balance < amount)
@@ -48,46 +110,32 @@ public:
 			return true;
 		}
 	}
-	double getBalance()
+
+	double getBalance() const
 	{
 		return balance;
 	}
-	int getTrasactions()
+	int getTrasactions() const
 	{
 		return num_transactions;
 	}
-	string getAccountType()
+
+	string getAccountType() const
 	{
 		return acct_type;
 	}
-
 };
-
-Account()
-{
-	name77 = "unknown" + " " + "unknown";
-	ssn = "_-_-_ - _-_ - _-_-_-_";
-	acct_num = 0000;
-
-}
-
-
-
-
-
-
-
 
 // Function prototypes begin
 void menu();
 int read_accts(BankAccount [], int);
-int findacct(int [], int, int);
-void print_accts(int [], double [], int);
-void withdrawal(int [], double [], int, ofstream &outfile, ifstream &infile);
-void deposit(int [], double [], int, ofstream &outfile, ifstream &infile);
-int new_acct(int [], double [], int, ofstream &outfile, ifstream &infile);
-void balance(int [], double [], int, ofstream &outfile, ifstream &infile);
-int delete_acct(int [], double [], int, ofstream &outfile, ifstream &infile);
+int findacct(const BankAccount [], int, int);
+void print_accts(const BankAccount [], int);
+void withdrawal(BankAccount [], int);
+void deposit(BankAccount [], int);
+int new_acct(BankAccount [], int);
+void balance(const BankAccount [], int);
+int delete_acct(BankAccount [], int);
 void pause();
 // Protypes end
 
@@ -124,23 +172,23 @@ int main()
 	do{
         switch (toupper(choice)) {
             case 'W':
-				withdrawal(acctnum_array, balance_array, num_accts, outfile, infile);
+				withdrawal(BankAccount account[], int num_accts);
 				break;
             case 'D':
-				deposit(acctnum_array, balance_array, num_accts, outfile, infile);
+				deposit(BankAccount account[], int num_accts);
 				break;
             case 'N':
-				num_accts = new_acct(acctnum_array, balance_array, num_accts, outfile, infile);
+				num_accts = new_acct(BankAccount account[], int num_accts);
 				break;
             case 'B':
-				balance(acctnum_array, balance_array, num_accts, outfile, infile);
+				balance(const BankAccount account[], int num_accts);
 				break;
 			case 'X':
-				num_accts = delete_acct(acctnum_array, balance_array, num_accts, outfile, infile);
+				num_accts = delete_acct(BankAccount account[], int num_accts);
 				break;
 			case 'Q':
 				not_done = false;
-				print_accts(acctnum_array, balance_array, num_accts);
+				print_accts(const BankAccount account[], int num_accts);
 				break;
             default:
 				cout << '\n' << "Error: '" << choice << "' is an invalid selection - try again" << '\n' << '\n';
@@ -189,7 +237,7 @@ Process:
 Output:
 *	Fills in the initial account and balance arrays and returns the number of active accounts
 */
-int read_accts(int acctnum_array[], double balance_array[], int max_accts)
+int read_accts(BankAccount account[], int max_accts)
 {
     string line;
     ifstream infile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\CISC3110_HW1\\data\\accounts.dat");
@@ -224,7 +272,7 @@ Output:
 *	If found, the index of the requested account is returned
 *	Otherwise, returns -1
 */
-int findacct(int acctnum_array[], int num_accts, int requested_account)
+int findacct(const BankAccount account[], int num_accts, int requested_account)
 {
 	for (int index = 0; index < num_accts; index++)
 		if (acctnum_array[index] == requested_account)
@@ -242,7 +290,7 @@ Process:
 Output:
 *	Prints the database of accounts and balances
 */
-void print_accts(int acctnum_array[], double balance_array[], int num_accts)
+void print_accts(const BankAccount account[], int num_accts)
 {
     ofstream dbfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\bank_database.dat");
 	dbfile << '\n' << '\n';
@@ -275,7 +323,7 @@ Output:
 *	For a valid withdrawal, the withdrawal transaction is printed
 *	Otherwise, an error message is printed
 */
-void withdrawal(int acctnum_array[], double balance_array[], int num_accts, ofstream &outfile, ifstream &infile)
+void withdrawal(BankAccount account[], int num_accts)
 {
 	int requested_account;
 	int index;
@@ -357,7 +405,7 @@ Output:
 *	For a valid deposit, the deposit transaction is printed
 *	Otherwise, an error message is printed
 */
-void deposit(int acctnum_array[], double balance_array[], int num_accts, ofstream &outfile, ifstream &infile)
+void deposit(BankAccount account[], int num_accts)
 {
 	int requested_account;
 	int index;
@@ -426,7 +474,7 @@ Process:
 Output:
 *	Returns new number of accounts
 */
-int new_acct(int acctnum_array[], double balance_array[], int num_accts, ofstream &outfile, ifstream &infile)
+int new_acct(BankAccount account[], int num_accts)
 {
 	int requested_account;
 	int index;
@@ -477,7 +525,7 @@ Output:
 *	If the account exists, the balance is printed
 *	Otherwise, an error message is printed
 */
-void balance(int acctnum_array[], double balance_array[], int num_accts, ofstream &outfile, ifstream &infile)
+void balance(const BankAccount account[], int num_accts)
 {
 	int requested_account;
 	int index;
@@ -485,7 +533,7 @@ void balance(int acctnum_array[], double balance_array[], int num_accts, ofstrea
 	cout << '\n' << "Enter the account number: ";	//prompt for account number
 	cin >> requested_account;
 
-	index = findacct(acctnum_array, num_accts, requested_account);
+	index = findacct(const BankAccount account[], num_accts, requested_account);
 
 	if (!requested_account)
     {
@@ -503,7 +551,7 @@ void balance(int acctnum_array[], double balance_array[], int num_accts, ofstrea
 	{
 		outfile << '\n' << "Transaction Requested: Balance Inquiry" << '\n';
 		outfile << "Account Number: " << requested_account << '\n';
-		outfile << "Current Balance: $" << balance_array[index] << '\n';
+		outfile << "Current Balance: $" << account[index].getBalance << '\n';
 	}
 	outfile.flush();
 	return;
@@ -524,7 +572,7 @@ Process:
 Output:
 *	Returns new number of accounts
 */
-int delete_acct(int acctnum_array[], double balance_array[], int num_accts, ofstream &outfile, ifstream &infile)
+int delete_acct(BankAccount account[], int num_accts)
 {
 	int requested_account;
 	int index;

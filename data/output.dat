@@ -1,0 +1,15 @@
+
+Transaction Requested: Withdrawal
+Account Number: 5678
+Error: $5000.00 is more than current account balance
+withdrawal request: $5000.00
+Current Balance: $1234.56
+
+Transaction Requested: Withdrawal
+Account Number: 5678
+Old Balance: $1234.56
+Amount to Withdraw: $56.00
+New Balance: $1178.56
+
+Transaction Requested: Withdrawal
+Error: Account number -1 does not exist

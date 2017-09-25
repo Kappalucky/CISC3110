@@ -7,8 +7,8 @@
 struct Depositor
 {
 private:
-	Name name;
-	string ssn;
+	Name name;	//name to come from Name struct "Name.h"
+	string ssn; //Social Security Number
 public:
 	Depositor();
 	void setSSN(string social);

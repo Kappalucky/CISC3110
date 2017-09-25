@@ -192,7 +192,7 @@ void print_accts(const BankAccount account[], int num_accts)
 	{
 		dbfile << account[index].getAccountNum;
 		dbfile << account[index].getName;
-		dbfile << "\t$" << &account[index].getBalance;
+		dbfile << "\t$" << account[index].getBalance;
 		dbfile << '\n';
 	}
 	dbfile.flush();

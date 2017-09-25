@@ -8,7 +8,7 @@ Depositor::Depositor()
 	ssn = "0-0-0 - 0-0 - 0-0-0-0";
 }
 
-void Depositor::setSSN(string social)
+void Depositor::setSSN(string social) //SSN = Social Security Number
 {
 	ssn = social;
 }

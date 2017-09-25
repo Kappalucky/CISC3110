@@ -15,7 +15,7 @@ private:
 	double balance;
 public:
 	BankAccount(double bal = 0.0);
-	void setInitial(string fn, string ln, string sn, int anum, int atype, double bal);
+	void setInitial(string fn, string ln, string sn, int anum, int atype, double bal); //read new account information
 	void setAcct_type(int type);
 	void makeDeposit(double amount);
 	bool withdraw(double amount);

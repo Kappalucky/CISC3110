@@ -1,7 +1,9 @@
-1234	200.55
-5678	1234.56
-9876	2.33
-2222	5000.00
-3333	999.99
-1111	0.00
-3634	0.00
+//first name, last name, SSN, account #, account type (1:Checking, 2:Saving, 3:CD), balance
+John Smith 123456789 1234 1 200.55
+Bre Baker 346675839 5678 2 1234.56
+Shaquille Foster 303043895 2222 1 5000.00
+Lincoln Charles 237360666 3333 1 999.99
+Selma Richards 681841309 1111 2	0.00
+Danny Glover 843153311 3634 2 0.00
+Tom PeachTree 933003327 9876 1 2.33
+

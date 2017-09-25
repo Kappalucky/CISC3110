@@ -50,6 +50,16 @@ public:
 		ssn = social;
 	}
 
+	void setName(string fn, string ln)
+	{
+		name.setName(fn, ln);
+	}
+
+	string getName()
+	{
+		return name.getName.firstName + " " + name.getName.lastName;
+	}
+
 	string getSSN()
 	{
 		return ssn;
@@ -74,6 +84,8 @@ public:
 		balance = bal;
 		num_transactions = 0;
 	}
+
+	void setInitial(string fn, string ln, string sn, int anum, int atype, double bal); //prototype
 
 	void setAcct_type(int type)
 	{
@@ -115,15 +127,36 @@ public:
 	{
 		return balance;
 	}
+
 	int getTrasactions() const
 	{
 		return num_transactions;
+	}
+
+	int getAccountNum()
+	{
+		return acct_num;
+	}
+
+	string getName() const
+	{
+		return depositor.getName.firstName + " " + depositor.getName.lastName;
 	}
 
 	string getAccountType() const
 	{
 		return acct_type;
 	}
+
+	void BankAccount::setInitial(string fn, string ln, string sn, int anum, int atype, double bal)
+	{
+		depositor.setName(fn, ln);
+		depositor.setSSN(sn);
+		acct_num = anum;
+		setAcct_type(atype);
+		balance = bal;
+		num_transactions = 1;
+	} 
 };
 
 // Function prototypes begin
@@ -143,9 +176,8 @@ const int MAX_NUM = 100; //Constantly will be 100
 
 int main()
 {
-    int acctnum_array[MAX_NUM];     //array of account numbers
+	BankAccount account[MAX_NUM];	//array of bank accounts
     int num_accts;                  //number of accounts
-    double balance_array[MAX_NUM];  //array of account balances
     char choice;                    //User menu choice
 	bool not_done = true;			//loop control flag
 
@@ -160,8 +192,8 @@ int main()
 
 	/*	First Part
 	*	Fill and print initial database */
-	num_accts = read_accts(acctnum_array, balance_array, MAX_NUM);
-	print_accts(acctnum_array, balance_array, num_accts);
+	num_accts = read_accts(account, MAX_NUM);
+	print_accts(account, num_accts);
 
 	/*	Second Part
 	*	Prompts for the transaction
@@ -172,23 +204,23 @@ int main()
 	do{
         switch (toupper(choice)) {
             case 'W':
-				withdrawal(BankAccount account[], int num_accts);
+				withdrawal(account, num_accts);
 				break;
             case 'D':
-				deposit(BankAccount account[], int num_accts);
+				deposit(account, num_accts);
 				break;
             case 'N':
-				num_accts = new_acct(BankAccount account[], int num_accts);
+				num_accts = new_acct(account, num_accts);
 				break;
             case 'B':
-				balance(const BankAccount account[], int num_accts);
+				balance(account, num_accts);
 				break;
 			case 'X':
-				num_accts = delete_acct(BankAccount account[], int num_accts);
+				num_accts = delete_acct(account, num_accts);
 				break;
 			case 'Q':
 				not_done = false;
-				print_accts(const BankAccount account[], int num_accts);
+				print_accts(account, num_accts);
 				break;
             default:
 				cout << '\n' << "Error: '" << choice << "' is an invalid selection - try again" << '\n' << '\n';
@@ -229,42 +261,54 @@ void menu()
 
 /*Function read_accts:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	max_accts - maximum number of active accounts allowed
 Process:
 *	Reads the initial database of accounts and balances
 Output:
-*	Fills in the initial account and balance arrays and returns the number of active accounts
+*	Fills in the initial accounts array and returns the number of active accounts
 */
 int read_accts(BankAccount account[], int max_accts)
 {
     string line;
     ifstream infile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\CISC3110_HW1\\data\\accounts.dat");
+	string fn;
+	string ln;
+	string sn;
+	int anum;
+	int atype;
 	int acct_count = 0;
+	double bal;
+
+    do
+    {
+		infile >> fn;
+		infile >> ln;
+		infile >> sn;
+		infile >> anum;
+		infile >> atype;
+		infile >> bal;
+		account[acct_count].setInitial(fn, ln, sn, anum, atype, bal);
+		acct_count++;
+    }
+    while(getline(infile, line) && acct_count < max_accts);
+
+	infile.close();
 
 	/*while (infile >> acctnum_array[acct_count] && acct_count < max_accts)
 	{
-		infile >> balance_array[acct_count];
-		acct_count++;
+	infile >> balance_array[acct_count];
+	acct_count++;
 	}*/
-    do
-    {
-        infile >> acctnum_array[acct_count] && acct_count < max_accts;
-        infile >> balance_array[acct_count];
-        acct_count++;
-    }
-    while(getline(infile, line));
 
-	infile.close();
     return acct_count;
 }
 
 /*Function findacct:
 Input:
-*	acctnum_array - array of account numbers
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
-*	requested_account - requested account requested_number
+*	requested_account - requested account number
 Process:
 *	Performs a linear search on the acct_num array for the requested account
 *	Linear as MAX_NUM of accounts is 100 and there is no sorting system currently
@@ -275,15 +319,14 @@ Output:
 int findacct(const BankAccount account[], int num_accts, int requested_account)
 {
 	for (int index = 0; index < num_accts; index++)
-		if (acctnum_array[index] == requested_account)
+		if (account[index].getAccountNum = requested_account)
 			return index;
 	return -1;
 }
 
 /*Function print_accts:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
 Process:
 *	Prints the database of accounts and balances
@@ -298,8 +341,9 @@ void print_accts(const BankAccount account[], int num_accts)
 	dbfile << "Account\tBalance" << '\n' << '\n';
 	for (int index = 0; index < num_accts; index++)
 	{
-		dbfile << acctnum_array[index];
-		dbfile << "\t$" << balance_array[index];
+		dbfile << account[index].getAccountNum;
+		dbfile << account[index].getName;
+		dbfile << "\t$" << account[index].getBalance;
 		dbfile << '\n';
 	}
 	dbfile.flush();
@@ -308,11 +352,9 @@ void print_accts(const BankAccount account[], int num_accts)
 
 /*Function withdrawal:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
-*	outfile - reference to the output file
-*	cin - reference to the "test cases" input file
+*	outfile - output file
 Process:
 *	Prompts for the requested account
 *	Calls findacct() to see if the account exists
@@ -325,6 +367,11 @@ Output:
 */
 void withdrawal(BankAccount account[], int num_accts)
 {
+	ofstream outfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\output.dat");
+
+	outfile.setf(ios::fixed, ios::floatfield); //sets decimal point to two places after ex: 12.22 rather than 12.256
+	outfile.precision(2);
+
 	int requested_account;
 	int index;
 	double amount_to_withdraw;
@@ -332,7 +379,7 @@ void withdrawal(BankAccount account[], int num_accts)
 	cout << '\n' << "Enter the account number: ";	//prompt for account number
 	cin >> requested_account;
 
-	index = findacct(acctnum_array, num_accts, requested_account);
+	index = findacct(account, num_accts, requested_account);
 
 	if (!requested_account)
         {
@@ -364,23 +411,23 @@ void withdrawal(BankAccount account[], int num_accts)
 			outfile << "Error: $" << amount_to_withdraw << " is an invalid amount" << '\n';
 		}
 		//while (amount_to_withdraw > 0.00)
-		else if (amount_to_withdraw > balance_array[index])		//invalid amount to withdraw
+		else if (account[index].withdraw(amount_to_withdraw) == false)		//invalid amount to withdraw
 		{
 			outfile << '\n' << "Transaction Requested: Withdrawal" << '\n';
 			outfile << "Account Number: " << requested_account << '\n';
 			outfile << "Error: $" << amount_to_withdraw << " is more than current account balance" << '\n';
 			outfile << "withdrawal request: $" << amount_to_withdraw << '\n';
-			outfile << "Current Balance: $" << balance_array[index] << '\n';
+			outfile << "Current Balance: $" << account[index].getBalance << '\n';
 
 		}
 		else                                     //valid withdrawal
 		{
 			outfile << '\n' << "Transaction Requested: Withdrawal" << '\n';
 			outfile << "Account Number: " << requested_account << '\n';
-			outfile << "Old Balance: $" << balance_array[index] << '\n';
+			outfile << "Old Balance: $" << account[index].getBalance << '\n';
 			outfile << "Amount to Withdraw: $" << amount_to_withdraw << '\n';
-			balance_array[index] -= amount_to_withdraw;		//make the withdrawal
-			outfile << "New Balance: $" << balance_array[index] << '\n';
+			account[index].withdraw(amount_to_withdraw);		//make the withdrawal
+			outfile << "New Balance: $" << account[index].getBalance << '\n';
 		}
 	}
 	outfile.flush();
@@ -390,11 +437,9 @@ void withdrawal(BankAccount account[], int num_accts)
 
 /*Function deposit:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
-*	outfile - reference to the output file
-*	cin - reference to the "test cases" input file
+*	outfile - output file
 Process:
 *	Prompts for the requested account
 *	Calls findacct() to see if the account exists
@@ -407,6 +452,11 @@ Output:
 */
 void deposit(BankAccount account[], int num_accts)
 {
+	ofstream outfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\output.dat");
+
+	outfile.setf(ios::fixed, ios::floatfield); //sets decimal point to two places after ex: 12.22 rather than 12.256
+	outfile.precision(2);
+
 	int requested_account;
 	int index;
 	double amount_to_deposit;
@@ -414,7 +464,7 @@ void deposit(BankAccount account[], int num_accts)
 	cout << '\n' << "Enter the account number: ";	//prompt for account number
 	cin >> requested_account;
 
-	index = findacct(acctnum_array, num_accts, requested_account);
+	index = findacct(account, num_accts, requested_account);
 
 	if (!requested_account)
     {
@@ -449,10 +499,10 @@ void deposit(BankAccount account[], int num_accts)
 		{
 			outfile << '\n' << "Transaction Requested: Deposit" << '\n';
 			outfile << "Account Number: " << requested_account << '\n';
-			outfile << "Old Balance: $" << balance_array[index] << '\n';
+			outfile << "Old Balance: $" << account[index].getBalance << '\n';
 			outfile << "Amount to Deposit: $" << amount_to_deposit << '\n';
-			balance_array[index] += amount_to_deposit;		//make the deposit
-			outfile << "New Balance: $" << balance_array[index] << '\n';
+			account[index].makeDeposit(amount_to_deposit);		//make the deposit
+			outfile << "New Balance: $" << account[index].getBalance << '\n';
 		}
 	}
 	outfile.flush();
@@ -461,11 +511,9 @@ void deposit(BankAccount account[], int num_accts)
 
 /*Function new_acct:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
-*	outfile - reference to the output file
-*	cin - reference to the "test cases" input file
+*	outfile - output file
 Process:
 *	Prompts for a new account number
 *	Calls findacct() to see if the account exists
@@ -476,8 +524,20 @@ Output:
 */
 int new_acct(BankAccount account[], int num_accts)
 {
-	int requested_account;
+	ofstream outfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\output.dat");
+
+	outfile.setf(ios::fixed, ios::floatfield); //sets decimal point to two places after ex: 12.22 rather than 12.256
+	outfile.precision(2);
+
+	string fn;
+	string ln;
+	string sn;
+	int anum;
+	int atype;
 	int index;
+	int acct_count = 0;
+	int requested_account;
+	double bal;
 	double new_account = 0;
 
 	cout << '\n' << "Enter new account number: "; //prompt for new account number
@@ -490,12 +550,36 @@ int new_acct(BankAccount account[], int num_accts)
         cin.ignore();
     }
 
-	index = findacct(acctnum_array, num_accts, requested_account);
+	index = findacct(account, num_accts, requested_account);
 
     if (index = -1)							  //valid account
 	{
-		acctnum_array[index] = requested_account;
+		requested_account = anum;
+
+		cout << "Enter First and last name to be associated with account: " << '\n';
+		cout << "First: ";
+		cin >> fn;
+		cout << '\n' << "Last: ";
+		cin >> ln;
+
+		cout << "Enter Social Security Number to be associated with name: ";
+		cin >> sn;
+		cout << '\n';
+
+		cout << "Choose account type based on number in menu: " << '\n';
+		cout << "1 - Checking" << '\n';
+		cout << "2 - Savings" << '\n';
+		cout << "3 - CD" << '\n';
+		cout << ": ";
+		cin >> atype;
+
+		cout << "Enter ammount to deposit: ";
+		cin >> bal;
+		cout << '\n';
+
+		account[num_accts+1].setInitial(fn, ln, sn, anum, atype, bal);
         num_accts++;
+
 		outfile << '\n' << "Transaction Requested: New Account" << '\n';
 		outfile << "Account Number: " << requested_account << " created."<< '\n';
 		//outfile << "Current Balance: $" << balance_array[index] << '\n';
@@ -511,11 +595,9 @@ int new_acct(BankAccount account[], int num_accts)
 
 /*Function balance:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
-*	outfile - reference to the output file
-*	cin - reference to the "test cases" input file
+*	outfile - output file
 Process:
 *	Prompts for the requested account
 *	Calls findacct() to see if the account exists
@@ -527,13 +609,18 @@ Output:
 */
 void balance(const BankAccount account[], int num_accts)
 {
+	ofstream outfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\output.dat");
+
+	outfile.setf(ios::fixed, ios::floatfield); //sets decimal point to two places after ex: 12.22 rather than 12.256
+	outfile.precision(2);
+
 	int requested_account;
 	int index;
 
 	cout << '\n' << "Enter the account number: ";	//prompt for account number
 	cin >> requested_account;
 
-	index = findacct(const BankAccount account[], num_accts, requested_account);
+	index = findacct(account, num_accts, requested_account);
 
 	if (!requested_account)
     {
@@ -559,11 +646,9 @@ void balance(const BankAccount account[], int num_accts)
 
 /*Function delete_acct:
 Input:
-*	acctnum_array - reference to array of account numbers
-*	balance_array - reference to array of account balances
+*	account - reference to array of accounts
 *	num_accts - number of active accounts
-*	outfile - reference to the output file
-*	cin - reference to the "test cases" input file
+*	outfile - output file
 Process:
 *	Prompts user for an account number
 *	If account does not exist, an error message is printed
@@ -574,13 +659,18 @@ Output:
 */
 int delete_acct(BankAccount account[], int num_accts)
 {
+	ofstream outfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\output.dat");
+
+	outfile.setf(ios::fixed, ios::floatfield); //sets decimal point to two places after ex: 12.22 rather than 12.256
+	outfile.precision(2);
+
 	int requested_account;
 	int index;
 
 	cout << '\n' << "Enter account number: ";	//prompt for account number
 	cin >> requested_account;
 
-	index = findacct(acctnum_array, num_accts, requested_account);
+	index = findacct(account, num_accts, requested_account);
 
 	if (!requested_account)
     {
@@ -593,18 +683,16 @@ int delete_acct(BankAccount account[], int num_accts)
 		outfile << '\n' << "Transaction Requested: Delete Account" << '\n';
 		outfile << "Error: Account Number " << requested_account << " does not exist" << '\n';
 	}
-	else if (balance_array[index] > 0)			//cannot delete account with balance
+	else if (account[index].getBalance > 0)			//cannot delete account with balance
 	{
 		outfile << '\n' << "Transaction Requested: Delete Account" << '\n';
-		outfile << "Error: Account Number " << requested_account << " has a balance of $" << balance_array[index] << '\n';
+		outfile << "Error: Account Number " << requested_account << " has a balance of $" << account[index].getBalance << '\n';
 	}
 	else                                       //valid account
 	{
-		acctnum_array[index] = 0;
 		num_accts--;
 		outfile << '\n' << "Transaction Requested: Delete Account" << '\n';
 		outfile << "Account Number: " << requested_account << " account deleted."<< '\n';
-		outfile << "Current Balance: $" << balance_array[index] << '\n';
 	}
 	outfile.flush();
 	return num_accts;

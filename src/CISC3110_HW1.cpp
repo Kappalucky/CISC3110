@@ -4,160 +4,8 @@
 #include <string>
 #include <fstream>
 #include <cstdlib> //needed for system function
+#include "BankAccount.h"
 using namespace std;
-
-struct Name
-{
-private:
-	string firstName;		//First name
-	string	lastName;		//Last name
-
-public:
-	Name()
-	{
-		firstName = "";
-		lastName = "";
-	}
-
-	void setName(string first, string last)
-	{
-		firstName = first;
-		lastName = last;
-	}
-
-	string getName()
-	{
-		return firstName + " " + lastName;
-	}
-};
-
-struct Depositor
-{
-private:
-	Name name;
-	string ssn;
-
-public:
-	Depositor()
-	{
-		Name();
-		//name.getName();
-		ssn = "0-0-0 - 0-0 - 0-0-0-0";
-	}
-
-	void setSSN(string social)
-	{
-		ssn = social;
-	}
-
-	void setName(string fn, string ln)
-	{
-		name.setName(fn, ln);
-	}
-
-	string getName()
-	{
-		return name.getName.firstName + " " + name.getName.lastName;
-	}
-
-	string getSSN()
-	{
-		return ssn;
-	}
-};
-
-class BankAccount
-{
-private:
-	Depositor depositor;
-	string acct_type;
-	int acct_num;
-	int num_transactions;
-	double balance;
-
-public:
-	BankAccount(double bal = 0.0)
-	{
-		Depositor();
-		//depositor.getSSN;
-		acct_type = "";
-		balance = bal;
-		num_transactions = 0;
-	}
-
-	void setInitial(string fn, string ln, string sn, int anum, int atype, double bal); //prototype
-
-	void setAcct_type(int type)
-	{
-		if (type == 1)
-		{
-			acct_type = "Checking";
-		}
-		if (type == 2)
-		{
-			acct_type = "Savings";
-		}
-		else
-		{
-			acct_type = "CD";
-		}
-	}
-
-	void makeDeposit(double amount)
-	{
-		balance += amount;
-		num_transactions++;
-	}
-
-	bool BankAccount::withdraw(double amount)
-	{
-		if (balance < amount)
-		{
-			return false; //Not enough in the account
-		}
-		else
-		{
-			balance -= amount;
-			num_transactions++;
-			return true;
-		}
-	}
-
-	double getBalance() const
-	{
-		return balance;
-	}
-
-	int getTrasactions() const
-	{
-		return num_transactions;
-	}
-
-	int getAccountNum()
-	{
-		return acct_num;
-	}
-
-	string getName() const
-	{
-		return depositor.getName.firstName + " " + depositor.getName.lastName;
-	}
-
-	string getAccountType() const
-	{
-		return acct_type;
-	}
-
-	void BankAccount::setInitial(string fn, string ln, string sn, int anum, int atype, double bal)
-	{
-		depositor.setName(fn, ln);
-		depositor.setSSN(sn);
-		acct_num = anum;
-		setAcct_type(atype);
-		balance = bal;
-		num_transactions = 1;
-	} 
-};
 
 // Function prototypes begin
 void menu();
@@ -690,6 +538,8 @@ int delete_acct(BankAccount account[], int num_accts)
 	}
 	else                                       //valid account
 	{
+		
+		account[index] = BankAccount();
 		num_accts--;
 		outfile << '\n' << "Transaction Requested: Delete Account" << '\n';
 		outfile << "Account Number: " << requested_account << " account deleted."<< '\n';

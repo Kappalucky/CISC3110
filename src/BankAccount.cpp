@@ -51,12 +51,12 @@ double BankAccount::getBalance() const
 	return balance;
 }
 
-int BankAccount::getTrasactions() const
+int BankAccount::getTrasactions()
 {
 	return num_transactions;
 }
 
-int BankAccount::getAccountNum()
+int BankAccount::getAccountNum() const
 {
 	return acct_num;
 }
@@ -66,9 +66,13 @@ string BankAccount::getName() const
 	return depositor.getName;
 }
 
-string BankAccount::getAccountType() const
+string BankAccount::getAccountType()
 {
 	return acct_type;
+}
+string BankAccount::getSSN()
+{
+	return depositor.getSSN();
 }
 
 void BankAccount::setInitial(string fn, string ln, string sn, int anum, int atype, double bal)

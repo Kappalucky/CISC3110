@@ -10,12 +10,13 @@ using namespace std;
 // Function prototypes begin
 void menu();
 int read_accts(BankAccount [], int);
-int findacct(const BankAccount [], int, int);
-void print_accts(const BankAccount [], int);
+int findacct(const BankAccount account[], int, int);
+void print_accts(const BankAccount account[], int);
 void withdrawal(BankAccount [], int);
+void account_info(BankAccount account[], int);
 void deposit(BankAccount [], int);
-int new_acct(BankAccount [], int);
-void balance(const BankAccount [], int);
+int new_acct(BankAccount[], int);
+void balance(const BankAccount account, int);
 int delete_acct(BankAccount [], int);
 void pause();
 // Protypes end
@@ -61,7 +62,7 @@ int main()
 				num_accts = new_acct(account, num_accts);
 				break;
             case 'B':
-				balance(account, num_accts);
+				balance(*account, num_accts);
 				break;
 			case 'X':
 				num_accts = delete_acct(account, num_accts);
@@ -191,7 +192,7 @@ void print_accts(const BankAccount account[], int num_accts)
 	{
 		dbfile << account[index].getAccountNum;
 		dbfile << account[index].getName;
-		dbfile << "\t$" << account[index].getBalance;
+		dbfile << "\t$" << &account[index].getBalance;
 		dbfile << '\n';
 	}
 	dbfile.flush();
@@ -489,6 +490,59 @@ void balance(const BankAccount account[], int num_accts)
 		outfile << "Current Balance: $" << account[index].getBalance << '\n';
 	}
 	outfile.flush();
+	return;
+}
+
+
+/*Function account_info:
+Input:
+*	account - reference to array of accounts
+*	num_accts - number of active accounts
+*	outfile - output file
+Process :
+*Prompts user for an SSN
+*	If SSN does not exist, an error message is printed
+*	Otherwise print account information
+Output :
+*	none
+*/
+void account_info(BankAccount account[], int num_accts)
+{
+	ofstream outfile("D:\\Users\\Shaquille\\Documents\\Program Code\\C++\\CISC3110_HW1\\data\\output.dat");
+
+	outfile.setf(ios::fixed, ios::floatfield); //sets decimal point to two places after ex: 12.22 rather than 12.256
+	outfile.precision(2);
+
+	string sn;
+	bool found;
+	cout << "Enter Social Security Number without dashes: ";
+	cin >> sn;
+
+	for (int index = 0; index < num_accts; index++)
+	{
+		if (account[index].getSSN = sn)
+		{
+			found = true;
+		}
+		else
+		{
+			found = false;
+		}
+
+		if (found = true)
+		{
+			outfile << '\n' << "Transaction Requested: Account Info" << '\n';
+			outfile << "Name: " << account[index].getName << '\n';
+			outfile << "Account Number: " << account[index].getAccountNum << '\n';
+			outfile << "Account Type: " << account[index].getAccountType << '\n';
+			outfile << "Balance: $" << account[index].getBalance << '\n';
+		}
+		else
+		{
+			outfile << '\n' << "Transaction Requested: Account Info" << '\n';
+			outfile << "Error: Social Security Number: " << sn << " does not exist" << '\n';
+		}
+	}
 	return;
 }
 

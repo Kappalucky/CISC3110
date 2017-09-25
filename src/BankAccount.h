@@ -20,10 +20,11 @@ public:
 	void makeDeposit(double amount);
 	bool withdraw(double amount);
 	double getBalance() const;
-	int getTrasactions() const;
-	int getAccountNum();
+	int getTrasactions();
+	int getAccountNum() const;
 	string getName() const;
-	string getAccountType() const;
+	string getAccountType();
+	string getSSN();
 
 };
 #endif // !BANKACCOUNT_H
